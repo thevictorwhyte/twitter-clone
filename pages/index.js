@@ -1,13 +1,17 @@
-import Head from "next/head";
-import Sidebar from "../components/Sidebar";
-import Login from "../components/Login";
-import { getProviders, getSession, useSession } from "next-auth/react";
-import Feed from "../components/Feed";
+import Head from 'next/head'
+import Sidebar from '../components/Sidebar'
+import Login from '../components/Login'
+import Modal from '../components/Modal'
+import { getProviders, getSession, useSession } from 'next-auth/react'
+import Feed from '../components/Feed'
+import { modalState } from '../atoms/modalAtom'
+import { useRecoilState } from 'recoil'
 
 export default function Home({ trendingResults, followResults, providers }) {
-  const { data: session } = useSession();
+  const { data: session } = useSession()
+  const [isOpen, setIsOpen] = useRecoilState(modalState)
 
-  if (!session) return <Login providers={providers} />;
+  if (!session) return <Login providers={providers} />
   return (
     <div className="">
       <Head>
@@ -18,22 +22,21 @@ export default function Home({ trendingResults, followResults, providers }) {
         <Sidebar />
         <Feed />
         {/*Widegets */}
-
-        {/*Modal */}
+        {isOpen && <Modal />}
       </main>
     </div>
-  );
+  )
 }
 
 export async function getServerSideProps(context) {
-  const trendingResults = await fetch("https://jsonkeeper.com/b/NKEV").then(
-    (res) => res.json()
-  );
-  const followResults = await fetch("https://jsonkeeper.com/b/WWMJ").then(
-    (res) => res.json()
-  );
-  const providers = await getProviders();
-  const session = await getSession(context);
+  const trendingResults = await fetch(
+    'https://jsonkeeper.com/b/NKEV',
+  ).then((res) => res.json())
+  const followResults = await fetch(
+    'https://jsonkeeper.com/b/WWMJ',
+  ).then((res) => res.json())
+  const providers = await getProviders()
+  const session = await getSession(context)
 
   return {
     props: {
@@ -42,5 +45,5 @@ export async function getServerSideProps(context) {
       providers,
       session,
     },
-  };
+  }
 }
